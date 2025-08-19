@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Para el amor de mi vida — Allison Vega 💖</title>
+  <style>
+    :root{ --accent:#ff4d6d; --text:#222230; --glass:#ffffffcc; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text); overflow:hidden;
+      background: linear-gradient(135deg,#ffdee9,#b5fffc);
+    }
+    /* Fondo slideshow */
+    #bg{ position:fixed; inset:0; z-index:-2; }
+    .bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; animation: slide 24s infinite; filter: saturate(1.05) contrast(1.02) brightness(0.95); }
+    .bg.bg1{ animation-delay: 0s } .bg.bg2{ animation-delay: 8s } .bg.bg3{ animation-delay: 16s }
+    @keyframes slide{ 0%{opacity:0} 8%{opacity:1} 33%{opacity:1} 41%{opacity:0} 100%{opacity:0} }
+
+    /* Scrim para legibilidad */
+    #scrim{ position:fixed; inset:0; z-index:-1; background: radial-gradient(60% 60% at 50% 20%, transparent, rgba(0,0,0,.22)); pointer-events:none; }
+
+    /* Tarjeta principal */
+    .card{ position:relative; width:min(820px,94vw); margin:48px auto; background:var(--glass); backdrop-filter: blur(6px); border-radius:20px; padding:26px 20px; box-shadow:0 22px 60px rgba(0,0,0,.18); text-align:center; }
+    h1{ margin:0 0 10px; color:var(--accent); font-size:clamp(28px,5vw,44px); font-weight:800; text-shadow:0 8px 18px rgba(255,77,109,.2); }
+    p.lead{ margin:6px 0 10px; font-size:clamp(16px,2.6vw,20px); line-height:1.45; color:#222; }
+    .actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+    button{ border:0; border-radius:999px; padding:10px 16px; cursor:pointer; font-weight:700; background:#222230; color:#fff; box-shadow:0 10px 22px rgba(0,0,0,.22); transition:transform .12s ease; }
+    button.secondary{ background:#fff; color:var(--text); border:2px solid #ece7ff; }
+    button:hover{ transform:translateY(-3px); box-shadow:0 16px 28px rgba(0,0,0,.28); }
+
+    /* Corazones */
+    .hearts{ position:fixed; inset:0; pointer-events:none; overflow:hidden; }
+    .heart{ position:absolute; font-size:16px; color:var(--accent); animation: floatUp linear forwards; opacity:.9; text-shadow:0 4px 12px rgba(255,77,109,.35); will-change:transform,opacity; }
+    @keyframes floatUp{ 0%{ transform:translateY(0) scale(.8) rotate(0); opacity:0 } 10%{opacity:1} 100%{ transform:translateY(-120vh) scale(1.6) rotate(360deg); opacity:0 } }
+
+    .firma{ margin-top:18px; font-size:20px; color:var(--accent); font-weight:700; }
+
+    footer{ position:fixed; left:0; right:0; bottom:8px; text-align:center; color:#fff; opacity:.8; font-size:13px; pointer-events:none; }
+  </style>
+</head>
+<body>
+  <!-- Fondo de fotos (coloca tus imágenes en la carpeta 'fotos') -->
+  <div id="bg">
+    <img src="fotos/foto1.jpg" alt="" class="bg bg1" />
+    <img src="fotos/foto2.jpg" alt="" class="bg bg2" />
+    <img src="fotos/foto3.jpg" alt="" class="bg bg3" />
+  </div>
+  <div id="scrim" aria-hidden="true"></div>
+
+  <!-- Corazones -->
+  <div class="hearts" id="hearts"></div>
+
+  <!-- Tarjeta central con el mensaje -->
+  <main class="card">
+    <h1>Para el amor de mi vida ❤️</h1>
+    <p class="lead">Allison Vega, eres todo lo que amo en esta vida y espero te guste este detalle.</p>
+    <p class="lead">No importa dónde estés, seguiré a tu lado.</p>
+    <p class="lead">Porque siempre vas a poder contar conmigo. 💕</p>
+
+    <div class="actions">
+      <button id="playBtn">▶️ Reproducir nuestra canción</button>
+      <button id="toggleHearts" class="secondary">💞 Lluvia de corazones</button>
+    </div>
+
+    <div class="firma"><strong>me encantas negrita</strong></div>
+
+    <!-- Audio local opcional (sube cancion.mp3 a la raíz si quieres reproducción directa) -->
+    <audio id="song" src="cancion.mp3" preload="none"></audio>
+  </main>
+
+  <footer>Hecho con amor 💘</footer>
+
+  <script>
+    // ======== PERSONALIZA ESTAS VALORES ========
+    // Si quieres cambiar la canción, pon aquí el link de YouTube que prefieras:
+    const YOUTUBE_URL = "https://www.youtube.com/watch?v=i9UDD6zyCGs&list=RDi9UDD6zyCGs&start_radio=1"; // <-- reemplaza con tu URL
+
+    // ======== MENSAJES ========
+    // (El HTML ya contiene el texto que pediste)
+
+    // ======== LÓGICA ========
+    // Corazones
+    const heartsLayer = document.getElementById("hearts");
+    function spawnHeart(){
+      const el = document.createElement("div");
+      el.className = "heart";
+      el.textContent = Math.random() < .33 ? "💖" : (Math.random() < .5 ? "💘" : "💞");
+      el.style.left = Math.random()*100 + "vw";
+      el.style.bottom = "-20px";
+      el.style.fontSize = (14 + Math.random()*22) + "px";
+      el.style.animationDuration = (6 + Math.random()*5) + "s";
+      heartsLayer.appendChild(el);
+      setTimeout(()=> el.remove(), 12000);
+    }
+    let raining = false, heartTimer = null;
+    document.getElementById("toggleHearts").addEventListener("click", () => {
+      raining = !raining;
+      if(raining) heartTimer = setInterval(()=>{ for(let i=0;i<3;i++) spawnHeart(); }, 500);
+      else { clearInterval(heartTimer); heartTimer = null; }
+    });
+
+    // Música: intenta reproducir cancion.mp3 si existe, si no abre YouTube
+    const playBtn = document.getElementById("playBtn");
+    const song = document.getElementById("song");
+    let playing = false;
+    playBtn.addEventListener("click", async () => {
+      if(!playing){
+        try {
+          await song.play();
+          playing = true;
+          playBtn.textContent = "⏸️ Pausar canción";
+        } catch(e){
+          // si falla (no hay MP3 o navegador bloquea), abre YouTube en nueva pestaña
+          window.open(YOUTUBE_URL, "_blank");
+        }
+      } else {
+        song.pause();
+        playing = false;
+        playBtn.textContent = "▶️ Reproducir nuestra canción";
+      }
+    });
+
+    // Si audio falla al cargar, aseguramos que el botón abra YouTube
+    song.addEventListener("error", () => {
+      playBtn.onclick = () => window.open(YOUTUBE_URL, "_blank");
+    });
+  </script>
+</body>
+</html>
